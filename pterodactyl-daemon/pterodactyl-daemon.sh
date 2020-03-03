@@ -1,4 +1,4 @@
 #!/bin/bash
 # launch pterodactyl daemon
-cd /srv/daemon
+cd /srv/pterodactyl-daemon
 sudo npm start

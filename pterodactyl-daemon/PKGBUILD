@@ -7,24 +7,26 @@ githuborg=pterodactyl
 pkgdesc="Open-source server control and management daemon for pterodactyl-panel."
 pkgver=0.6.12
 pkgpath="github.com/${githuborg}/${pkgname1}"
-pkgrel=5
+pkgrel=6
 arch=('any')
 url="https://${pkgpath}"
 license=()
 makedepends=()
 # https://pterodactyl.io/community/installation-guides/daemon/debian10.html#server-configuration
-depends=(docker nodejs npm python)
+depends=(docker nodejs-lts-erbium npm python)
 source=(
   "${url}/releases/download/v${pkgver}/${pkgname1}.tar.gz"
   'pterodactyl-daemon.sh'
   'pterodactyl-daemon-config.sh'
   'wings.service'
+  'pterodactyl-daemon.sysusers'
 )
 sha256sums=(
   'aef507f4b9f1272b678cf8b23c0cf0db58d1bba4e8a02d6744018f63db4ff66a'
-  '9f10ed372aa45c6dddc9f3b4abe5c93f68efe447d0debe5bc2a2c07588c7c143'
-  '3252d01e103bc7c28d541308fdeeee1ab9eb9654017b976e84b22081c397c460'
-  'abf8d521550a79e6a6d7cebe845eb6cb1ba602a8583cb885fc7fd94152b727cb'
+  '84993f529aad30a0ee7e5a1855a7a4a3b1ac1aca6dc3132fd72d10443bf61008'
+  '4ee54075cdbe22e2d36dd6c7437e74707ae5a541f79b02672707f2c74ecdb2db'
+  '455a046c2178ae65416c28547172a1f93bcdf6db9aa693e5dd69accc0fb74f51'
+  '21ceff659bfb67dac9ace10096339e416ee44fa87e843307b309c8732f6dc6a0'
 )
 
 build() {
@@ -39,8 +41,7 @@ package() {
 	# https://pterodactyl.io/daemon/getting_started.html#download-files
 	mkdir -p ${pkgdir}/usr/bin/
 	mkdir -p ${pkgdir}/usr/lib/systemd/system/
-	mkdir -p ${pkgdir}/srv/${pkgname1}/npm-cache
-	mkdir -p ${pkgdir}/srv/${pkgname1}-data
+	mkdir -p ${pkgdir}/srv/${pkgname}-data
 	# See https://github.com/npm/npm/issues/9359 for details.
   cp -r "${srcdir}/${pkgname1}-${pkgver}" "${pkgdir}/srv/${pkgname}"
 	find "${pkgdir}"/srv/${pkgname} -type d -exec chmod 755 {} +
@@ -49,8 +50,11 @@ package() {
 	# https://bugs.archlinux.org/task/63396
 	# install scripts & systemd service
   install -Dm755 ${srcdir}/${pkgname}.sh ${pkgdir}/srv/${pkgname}/${pkgname}.sh
-	ln -rTsf ${pkgdir}/srv/${pkgname1}/${pkgname}.sh ${pkgdir}/usr/bin/${pkgname}
 	install -Dm755 ${srcdir}/${pkgname}-config.sh ${pkgdir}/srv/${pkgname}/${pkgname}-config.sh
-	ln -rTsf ${pkgdir}/srv/${pkgname1}/${pkgname}-config.sh ${pkgdir}/usr/bin/${pkgname}-config
 	install -Dm644 ${srcdir}/wings.service ${pkgdir}/usr/lib/systemd/system/
+
+	ln -rTsf ${pkgdir}/srv/${pkgname}/${pkgname}.sh ${pkgdir}/usr/bin/${pkgname}
+	ln -rTsf ${pkgdir}/srv/${pkgname}/${pkgname}-config.sh ${pkgdir}/usr/bin/${pkgname}-config
+
+  install -Dm644 ${pkgname}.sysusers "${pkgdir}/usr/lib/sysusers.d/${pkgname}.conf"
 }
