@@ -1,0 +1,23 @@
+pkgbase = pterodactyl-daemon
+	pkgdesc = Open-source server control and management daemon for pterodactyl-panel.
+	pkgver = 0.6.12
+	pkgrel = 6
+	url = https://github.com/pterodactyl/daemon
+	arch = any
+	depends = docker
+	depends = nodejs-lts-erbium
+	depends = npm
+	depends = python
+	source = https://github.com/pterodactyl/daemon/releases/download/v0.6.12/daemon.tar.gz
+	source = pterodactyl-daemon.sh
+	source = pterodactyl-daemon-config.sh
+	source = wings.service
+	source = pterodactyl-daemon.sysusers
+	sha256sums = aef507f4b9f1272b678cf8b23c0cf0db58d1bba4e8a02d6744018f63db4ff66a
+	sha256sums = 84993f529aad30a0ee7e5a1855a7a4a3b1ac1aca6dc3132fd72d10443bf61008
+	sha256sums = 4ee54075cdbe22e2d36dd6c7437e74707ae5a541f79b02672707f2c74ecdb2db
+	sha256sums = 455a046c2178ae65416c28547172a1f93bcdf6db9aa693e5dd69accc0fb74f51
+	sha256sums = 21ceff659bfb67dac9ace10096339e416ee44fa87e843307b309c8732f6dc6a0
+
+pkgname = pterodactyl-daemon
+

@@ -1,0 +1,56 @@
+# Maintainer: Moses Narrow <moe_narrow@use.startmail.com>
+# Contributor: 2xsaiko <aur@dblsaiko.net>
+projectname=pterodactyl
+pkgname=pterodactyl-panel
+pkgname1=panel
+githuborg=pterodactyl
+pkgdesc="Open-source game server management panel"
+pkgver=0.7.16
+pkgpath="github.com/${githuborg}/${pkgname1}"
+pkgrel=5
+arch=('any')
+url="https://${pkgpath}"
+license=()
+install="${pkgname}.install"
+
+# https://pterodactyl.io/community/installation-guides/daemon/debian10.html#install-requirements
+makedepends=(unzip)
+depends=(mariadb mariadb-clients php php-gd php-fpm redis composer dialog)
+
+source=(
+  "${url}/releases/download/v${pkgver}/${pkgname1}.tar.gz"
+  pterodactyl.conf
+  pterodactyl-panel.sh
+  pteroq.service
+)
+
+sha256sums=(
+  '28ab84518285c6f260737e4bb423a2de19a1935693179811ea15b378fd4856ac'
+  '9c412eb73baff0ba32cb15e8b86e52b40ec5a3fda5768e6b034b08ccbf2edc75'
+  '8ac1252a2357927bd95f5091502907e1b7d6a335b8809e9f49d8dbbce306f244'
+  '112306d7f45936039e4504bbd4e5aabaa7943051ec8b8513ca6037cf1bcd55d3'
+)
+
+build() {
+  cd ${srcdir}/${pkgname1}-${pkgver}
+  cp .env.example .env
+  php -dextension=pdo_mysql.so -dextension=bcmath.so /usr/bin/composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
+  cd ${srcdir}
+  cp ${srcdir}/${projectname}.conf ${srcdir}/${pkgname1}-${pkgver}/${projectname}.conf
+}
+
+package() {
+	# https://pterodactyl.io/daemon/installing.html#installing-daemon-software
+	mkdir -p ${pkgdir}/var/www/ #${pkgname}
+	mkdir -p ${pkgdir}/usr/lib/systemd/system/
+	mkdir -p ${pkgdir}/usr/bin
+	cp -r ${srcdir}/${pkgname1}-${pkgver} ${pkgdir}/var/www/${projectname}
+	cd ${pkgdir}/var/www/${projectname}
+	#tar --strip-components=1 -xzvf ${srcdir}/panel.tar.gz
+	chmod -R 755 ${pkgdir}/var/www/${projectname}/storage/* ${pkgdir}/var/www/${projectname}/bootstrap/cache/
+	chown -R http:http *
+	#cp ${pkgdir}/var/www/${projectname}/.env.example ${pkgdir}/var/www/${projectname}/.env
+	install -Dm644 ${srcdir}/pteroq.service ${pkgdir}/usr/lib/systemd/system/
+	install -Dm755 ${srcdir}/${pkgname}.sh  ${pkgdir}/var/www/${projectname}/${pkgname}.sh
+	ln -rTsf ${pkgdir}/var/www/${projectname}/${pkgname}.sh ${pkgdir}/usr/bin/${pkgname}
+}

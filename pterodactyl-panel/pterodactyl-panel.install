@@ -1,0 +1,5 @@
+post_install() {
+  echo "The pdo_mysql and bcmath extensions need to be enabled if not already."
+  echo "Make sure to configure Pterodactyl Panel according to"
+  echo "https://pterodactyl.io/panel/getting_started.html#installation."
+}
